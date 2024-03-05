@@ -53,6 +53,8 @@ However, this proof gives then rise to an algorithm $\textsc{CertifyOrCut}(G, \p
 \end{itemize}
 Careful but rather straight-forward recursive application of this procedure then yields an algorithm to compute a $\phi$-expander decomposition. 
 
+To implement this algorithm above, we are required to find the second eigenvalue of the 'normalized' Laplacian $\NN$ that we introduce in this lecture. We can find the eigenvalues using the power method\footnote{See \url{https://en.wikipedia.org/wiki/Power_iteration}.} which multiplies a random vector with the matrix multiple times to find the largest eigenvalue. In our case, we want to use the inverse of $\NN$ and pick a random vector orthogonal to the trivial first eigenvector which yields the 2nd eigenvalue of $\NN$. The inverse-matrix vector multiplications can be done extremely fast given a solver for Laplacian systems $\LL \xx = \dd$ which we learn about in the next chapters.
+
 \section{A Lower Bound for Conductance via Eigenvalues}
 
 \paragraph{An Alternative Characterization of Conductance.} Let us now take a closer look at the definition of conductance and observe that if a set $S$ has $\vol(S) \leq \vol(V)/2$ then
@@ -170,7 +172,13 @@ We now arrive at the main idea of the proof: we define the set $S_{\tau} = \{ i 
         0 &\text{otherwise}.
         \end{cases}
 \end{align}
-So, we have probability $\mathbb{P}[a < \tau < b] = \int_{t=a}^b p(t)\; dt$.
+So, we have probability $\mathbb{P}[\alpha < \tau < \beta] = \int_{t=\alpha}^\beta p(t)\; dt$.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=0.25]{fig/fig2_lecCheeger}
+    \caption{The probability density function $p(t)$. The area between $\alpha$ and $\beta$ for $\alpha < 0 < \beta$ is $\alpha^2 + \beta^2$. This is the probability of the event $\mathbb{P}[\alpha < \tau < \beta]$. Note in particular that the total area is $\zz_{sc}(1)^2 + \zz_{sc}(n)^2$ which is equal to $1$ by assumption and thus $p(t)$ is a valid pdf.}\label{fig:fig2_lecCheeger}
+\end{figure}
 
 Since the volume incident to $S_{\tau}$ might be quite large, let us define $S$ for convenience by
 \[
@@ -187,16 +195,14 @@ We have  $\frac{\mathbb{E}_{\tau}\left[\vecone_S^\trp \LL \vecone_S\right]}{\mat
 \begin{proof}
 Recall $\vecone_S^\trp \LL \vecone_S = E(S_{\tau}, V \setminus S_{\tau})$, and by choice of $\tau$, we have for any edge $e = \{i,j\} \in E$ where $\zz_{sc}(i) \leq \zz_{sc}(j)$,
 \begin{align*}
-    \mathbb{P}_{\tau}[e \in E(S_{\tau}, V \setminus S_{\tau})] &= \mathbb{P}_{\tau}[\zz_{sc}(i) < \tau \leq \zz_{sc}(j)] \\ &= \int_{t=i}^j 2|t|\; dt = \sgn{j} \cdot \zz_{sc}(j)^2 - \sgn{i} \cdot \zz_{sc}(i)^2.
-\end{align*}
-Distinguishing by cases, we get
-\[
-\sgn{j} \cdot \zz_{sc}(j)^2 - \sgn{i} \cdot \zz_{sc}(i)^2 = \begin{cases}
-    |\zz_{sc}(i)^2 - \zz_{sc}(j)^2| & \sgn{i} = \sgn{j},
+    \mathbb{P}_{\tau}[e \in E(S_{\tau}, V \setminus S_{\tau})] &= \mathbb{P}_{\tau}[\zz_{sc}(i) < \tau \leq \zz_{sc}(j)] \\ &= \int_{t=i}^j 2|t|\; dt \\
+    &= \begin{cases} \zz_{sc}(i)^2 + \zz_{sc}(j)^2
+    & \zz(i) < 0 < \zz(j),
     \\
-    \zz_{sc}(i)^2 + \zz_{sc}(j)^2 &\text{otherwise}.
+     |\zz_{sc}(i)^2 - \zz_{sc}(j)^2|&\text{otherwise}.
     \end{cases} 
-\]
+\end{align*}
+The last equality can be seen from \Cref{fig:fig2_lecCheeger}.
 We can further upper bound either case by $ |\zz_{sc}(i) - \zz_{sc}(j)| \cdot (|\zz_{sc}(i)| + |\zz_{sc}(j)|)$ (we leave this as an exercise).
 
 Using our new upper bound, we can sum over all edges $e \in E$ to conclude that
