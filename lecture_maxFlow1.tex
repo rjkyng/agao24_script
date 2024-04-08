@@ -213,7 +213,7 @@ cuts.
 Given a vertex subset $S \subseteq V$, we say that $(S, V\setminus S)$
 is a \emph{cut} in $G$ and that the value of the cut is
 \[
-  c_G(S) = \sum_{e \in E \intersect (S \times V\setminus S) } \ww(e)
+  c_G(S) = \sum_{e \in E \intersect (S \times V\setminus S) } \cc(e)
   .
 \]
 
@@ -568,11 +568,8 @@ for Maximum Flow algorithms, which is a  very active area of research.
   \item General integer capacities: For a long time, the
     state-of-the-art was a result by Goldberg and Rao achieving a
     runtime of \(O(m \min(\sqrt{m},n^{2/3}) \log(n) \log(U) )\) where $U$ is the
-    maximum capacity.
-    Very recently, $m^{1+o(1)}\log(U)$ has been claimed (not yet
-    published in a peer-reviewed venue), see
-    \url{https://arxiv.org/abs/2203.00671}. There are many other recent results 
-prior to this work that we don't have time to cover here.
+    maximum capacity. Very recently, an algorithm that runs in almost-linear time $m^{1+o(1)}\log(U)$ was given (see
+    \url{https://arxiv.org/abs/2203.00671}). There are many other recent results prior to this work that we don't have time to cover here. 
 \end{itemize}
 %\end{document}
 
