@@ -172,10 +172,10 @@ As before, we can write an equation for every vertex saying that the
 voltage differences must produce the desired net current:
 \begin{tight_itemize}
 \item Net current at $s$:
-  $\phantom{----,,,}-1 = \sum_{(s,v)} \frac{1}{\rr(s,v)} (\xx(v) - \xx(s))$
+  $\phantom{----,,,}-1 = \sum_{(s,v)} \frac{1}{\rr(s,v)} (\xx(s) - \xx(v))$
 \item Net current at $u \in V\setminus\setof{s,t}$:
-  $\phantom{..} 0 = \sum_{(u,v)} \frac{1}{\rr(u,v)} (\xx(v) - \xx(u))$
-\item Net current at  $t$:  $\phantom{------,} 1=\sum_{(t,v)} \frac{1}{\rr(t,v)} (\xx(v) - \xx(t))$
+  $\phantom{..} 0 = \sum_{(u,v)} \frac{1}{\rr(u,v)} (\xx(u) - \xx(v))$
+\item Net current at  $t$:  $\phantom{------,} 1=\sum_{(t,v)} \frac{1}{\rr(t,v)} (\xx(t) - \xx(v))$
 \end{tight_itemize}
 This gives us $n$ constraints, exactly as many as we have voltage
 variables.
