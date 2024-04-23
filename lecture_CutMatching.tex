@@ -27,7 +27,7 @@ There is an algorithm $\textsc{SparsityCertifyOrCut}(G, \psi)$ that given a grap
 The algorithm runs in time $O(\log^2 n) \cdot T_{max\_flow}(G) + \tilde{O}(m)$ where $T_{max\_flow}(G)$ is the time it takes to solve a Max Flow problem on $G$\footnote{Technically, we will solve problems with two additional vertices and $n$ additional edges but this will not change the run-time of any known max-flow algorithm asymptotically.}.
 \end{theorem}
 
-The bounds above can further be extended to compute $\phi$-expanders (with regard to conductance). Using current state-of-the art Max Flow results, the above problem can be solved in $\tilde{O}(m + n^{3/2+o(1)})$ time \cite{BLLSSSW21}. 
+The bounds above can further be extended to compute $\phi$-expanders (with regard to conductance). Using current state-of-the-art Max Flow results, the above problem can be solved in $m^{1+o(1)}$ time (see \cite{chen2022maximum}). 
 
 \section{Embedding Graphs into Expanders}
 
@@ -61,14 +61,15 @@ Unfortunately, the reverse of the above lemma is not true, i.e. even if there ex
 Although there are still some missing pieces, let us next discuss the algorithm   \ref{algo:cutMatchingGame}. The algorithm runs for $T$ iterations where we will later find that the right value to set $T$ to is in $\Theta(\log^2 n)$. 
 
 \begin{algorithm}[H]
-    \For{$i = 0,1,2, \dots, T$}{
+    \For{$i = 1,2, \dots, T$}{
         $(S_i, \overline{S}_i) \gets \textsc{FindBiPartition}(G, \{M_1, M_2, \dots, M_{i}\})$ \tcp*{Assume  $|S| = |\overline{S}| = n/2$}
         Solve the flow problem on $G$ where each vertex $e \in E$ receives capacity $\cc(e) = 1/\psi$ and the demand at each edge $v \in S$ is $+1$ and for each $v \in \overline{S}$ is $-1$, by introducing a super-source $s$ and super-sink $t$\;
         \If{flow procedure returns a flow $\ff$ with $\val(f) = n/2$}{
             Remove $s,t$ to derive $S$-$\overline{S}$ flow; then decompose flow $\ff$ into flow paths $P_1, P_2, \dots, P_{n/2}$\;
             Create a matching $M_{i}$ where for each $s$-to-$\overline{s}$ flow path $P_i$, we add $(s, \overline{s})$ to $M_i$.
         }\Else{
-            \Return the minimum cut $(X_S, X_{\overline{S}})$ in the flow problem after removing the super-source $s$ and the super-sink $t$ from the two sets.
+            Let $(X \cup \{s\}, (V \setminus X) \cup \{t\})$ be the $st$-minimum cut in the above flow problem.\\
+            \Return $(X, V \setminus X)$
         }
     }
     \Return $H = \bigcup_{i} M_i$
@@ -98,23 +99,22 @@ If the algorithm returns after constructing $T$ matchings, for an appropriately 
 It turns out that this min-cut already is a sparse cut by the way our flow problem is defined.
 
 \begin{lemma}
-If the algorithm finds a cut $(X_S, X_{\overline{S}})$, then the returned cut satisfies $|E_G(X_S \setminus \{s\}, X_{\overline{S}} \setminus \{t\})| = O(\psi)$.
-\end{lemma}
+If the algorithm terminates with a cut $(X, V \setminus X)$, then $\psi(X) = O(\psi)$. \end{lemma}
 \begin{proof}
-First observe that since a min-cut was returned, we have that $|E_G(X_S, X_{\overline{S}})| < n/2$ (otherwise we could have routed the demands).
+Let $X_s = X \cup \{s\}, \overline{X}_s = (V \setminus X) \cup \{t\}$. First observe that since the flow was not routed, and $(X_s, \overline{X}_s)$ is an $st$-min cut for this flow problem, we have that $\cc(E_G(X_, \overline{X}_s) < n/2$ (otherwise we could have routed the demands).
 
-Let $n_s$ be the number of edges incident to the super-source $s$ that cross the cut $(X_S, X_{\overline{S}})$. Let $n_t$ be the number of edges incident to $t$ that cross the cut $(X_S, X_{\overline{S}})$.
+Let $n_s$ be the number of edges incident to the super-source $s$ that cross the cut $(X_s, \overline{X}_{s})$. Let $n_t$ be the number of edges incident to $t$ that cross the cut $(X_s, \overline{X}_{s})$.
 
 \begin{figure}[!ht]
     \centering
     \includegraphics[scale=0.2]{./fig/FewEdgesCrossCut_lectureCutMatching.jpeg}
-    \caption{Set $X_S$ is enclosed by the orange circle. The thick orange edges are in the cut and incident to super-source $s$. Thus they count towards $n_s$. Here $n_s = 2, n_t = 0$. Note that all remaining edges in the cut are black, i.e. were originally in $G$ and therefore have capacity $1/\psi$.}
+    \caption{Set $X_s$ is enclosed by the orange circle. The thick orange edges are in the cut and incident to super-source $s$. Thus they count towards $n_s$. Here $n_s = 2, n_t = 0$. Note that all remaining edges in the cut are black, i.e. were originally in $G$ and therefore have capacity $1/\psi$.}
     %\label{fig:my_label}
 \end{figure}
 
-Observe that after taking away the vertices $s$ and $t$, the cut $(X_S \setminus \{s\}, X_{\overline{S}} \setminus \{t\})$ has less than $n/2 - n_s - n_t$ capacity. But each remaining edge has capacity $1/\psi$, so the total number of edges in the cut can be at most $\psi \cdot (n/2 - n_s - n_t)$. Since $X_S \setminus \{s\}$ is of size at least $n/2-n_s$, and $X_{\overline{S}} \setminus \{t\}$ is of size at least $n/2-n_t$, we have that the induced cut in $G$ has
+Observe that after taking away the vertices $s$ and $t$, the cut $(X, V \setminus X)$ has less than $n/2 - n_s - n_t$ capacity. But each remaining edge has capacity $1/\psi$, so the total number of edges in the cut can be at most $\psi \cdot (n/2 - n_s - n_t)$. Since $X = X_s \setminus \{s\}$ is of size at least $n/2-n_s$, and $V \setminus X = \overline{X}_{s} \setminus \{t\}$ is of size at least $n/2-n_t$, we have that the induced cut in $G$ has
 \[
-    \psi(X_S \setminus \{s\}) < \frac{\psi \cdot (n/2 - n_s - n_t)}{\min\{ n/2 - n_s, n/2 - n_t\}} \leq \psi.
+    \psi(X) < \frac{\psi \cdot (n/2 - n_s - n_t)}{\min\{ n/2 - n_s, n/2 - n_t\}} \leq \psi.
 \]
 \end{proof}
 
@@ -122,7 +122,7 @@ Observe that after taking away the vertices $s$ and $t$, the cut $(X_S \setminus
 
 Next, we give the implementation and analysis for the procedure $\textsc{FindBiPartition}(\cdot)$. We start however by giving some more preliminaries.
 
-\paragraph{Random Walk on Matchings.} Let $\{M_1, M_2, \dots, M_{T+1}\}$ be the set of matchings we compute (if we never find a cut). In the $i^{th}$-step of the lazy random walk,  we let the mass at each vertex $j$ stay put with probability $1/2$,  and otherwise traverses the edge in matching $M_i$ incident to $j$ with probability $1/2$. 
+\paragraph{Random Walk on Matchings.} Let $\{M_1, M_2, \dots, M_{T}\}$ be the set of matchings we compute (if we never find a cut). In the $i^{th}$-step of the lazy random walk,  we let the mass at each vertex $j$ stay put with probability $1/2$,  and otherwise traverses the edge in matching $M_i$ incident to $j$ with probability $1/2$. 
 
 We let $\pp_{j \mapsto i}^t$ denote the probability that a particle that started at vertex $j$ is at vertex $i$ after a $t$-step lazy random walk. We let $\pp_i^t = [\pp_{1 \mapsto i}^t\; \pp_{2 \mapsto i}^t\; \dots \;\pp_{n \mapsto i}^t]$. Note that for each edge $(i,j) \in M_{t+1}$, we have that 
 \[
@@ -136,7 +136,7 @@ We say that a lazy random walk is \emph{mixing} at step $t$, if for each $i,j$, 
 If $t$-step lazy random walk is \emph{mixing}, then $H = \bigcup_{i \leq t} M_i$ is a $\frac{1}{2}$-expander.
 \end{lemma}
 \begin{proof}
-Consider any cut $(S, \overline{S})$ with $|S| \leq |\overline{S}|$. It is convenient to think about the random walks in terms of probability mass that is moved around. Observe that each vertex $j \in \overline{S}$ has to push at least $1/(2n)$ units of probability from $j$ to $i$ (by definition of mixing). 
+Consider any cut $(S, \overline{S})$ with $|S| \leq |\overline{S}|$. It is convenient to think about the random walks in terms of probability mass that is moved around. Observe that each vertex $j \in \overline{S}$ has to push at least $1/(2n)$ units of mass from $j$ to $i$ (by definition of mixing). 
 
 \begin{figure}[!ht]
     \centering
@@ -148,10 +148,9 @@ Consider any cut $(S, \overline{S})$ with $|S| \leq |\overline{S}|$. It is conve
 Clearly, to move the mass from $\overline{S}$ to $S$ it has to use the matching edges that also cross the cut.
 
 Now observe that since there are $\geq n/2$ vertices in $\overline{S}$, and each of them has to push $\geq 1/(2n)$ mass to $i$, the total amount of probability mass pushed through the cut for $i$ is $\geq 1/4$. Since there are $|S|$ such vertices $i$, the total amount of mass that has to cross the cut is $\geq |S|/4$. 
-But note, that after each step of the random walk, the total probability mass at each vertex is exactly $1$. Thus, at each step $t'$, each edge in $M_{t'}$ crossing the cut can push at most $1/2$ units of probability mass over the cut (and thereafter the edge is gone). 
+But note, that after each step of the random walk, the total probability mass at each vertex is exactly $1$. Thus, at each step $i \leq t$, each edge in $M_{i}$ crossing the cut can push at most $1/2$ units of probability mass over the cut (and thereafter the edge is gone). 
 
 It follows that there must be at least $|S|/2$ edges in the matchings $M_1, M_2, \dots M_{t}$. But this implies that $H = \cup_i M_i$ is a $\frac{1}{2}$-expander.
-
 \end{proof}
 
 \paragraph{Implementing $\textsc{FindBiPartition}(\cdot)$.} We can now give away the implementation of $\textsc{FindBiPartition}(\cdot)$ which you can find below.
@@ -174,12 +173,12 @@ In the algorithm $\textsc{SparsityCertifyOrCut}(\cdot)$, we have $\mathbb{E}[\Ph
 \end{claim}
 
 \begin{corollary}\label{cor:fewRoundsCutMathcing}
-For appropriate $T = \Theta(\log^2 n)$, the algorithm $\textsc{SparsityCertifyOrCut}(\cdot)$ has $\Phi^{(T+1)} \leq 4/n^2$.
+For appropriate $T = \Theta(\log^2 n)$, the algorithm $\textsc{SparsityCertifyOrCut}(\cdot)$ has $\Phi^{(T+1)} \leq 4/n^2$ w.h.p. (i.e. with probability $\geq 1-1/n$).
 \end{corollary}
 
-To obtain the Corollary, one can simply set up a sequence of random $0$-$1$ variables $X^1, X^2, \ldots, X^{(T+1)}$ where each $X^{(t+1)}$ is $1$ if and only if the decrease in potential is at least an $\Omega(1/\log n)$-fraction of the previous potential. Since the expectation is only over the current $\rr$ in each round and we choose these independently at random, one can then use a Chernoff bound to argue that after $T$ rounds (for an appropriate hidden constant), one has at least $\Omega(T)$ rounds during which the potential is decreased substantially (unless it is already tiny and the $O(n^{-5})$ factor dominates). 
+To obtain the Corollary, one can simply set up a sequence of random $0$-$1$ variables $X^1, X^2, \ldots, X^{(T)}$ where each $X^{(t+1)}$ is $1$ if and only if the decrease in potential is at least an $\Omega(1/\log n)$-fraction of the previous potential. Since the expectation is only over the current $\rr$ in each round and we choose these independently at random, one can then use a Chernoff bound to argue that after $T$ rounds (for an appropriate hidden constant), one has at least $\Omega(T)$ rounds during which the potential is decreased substantially (unless it is already tiny and the $O(n^{-5})$ factor dominates). 
 
-We further observe that this implies that $\{M_1, M_2, \dots, M_{T+1}\}$ is mixing (you can straight-forwardly prove it by a proof of contradiction), and thereby we conclude the proof of our main theorem. 
+We further observe that this implies that $\{M_1, M_2, \dots, M_{T}\}$ is mixing (otherwise, the contribution of the violating coordinate $\pp^T_{j \mapsto i}$ would contribute $>1/(2n)^2$ to the potential, but all terms are non-negative), and thereby we conclude the proof of our main theorem. 
 
 Let us now give the prove of Claim \ref{clm:mainClaimCutMatching}: 
 
@@ -192,7 +191,7 @@ Considering now matching $M_{t+1}$,  and an edge $(i,j) \in M_{t+1}$. We can re-
      \Phi^{t} - \Phi^{(t+1)} &= \sum_{(i,j) \in M_{t+1}}  \|\pp_{i}^t -\vecone/n\|_2^2 + \|\pp_{j}^t -\vecone/n\|_2^2 -  \|\pp_{i}^{(t+1)} -\vecone/n\|_2^2 - \|\pp_{j}^{(t+1)} -\vecone/n\|_2^2\\
      &= \sum_{(i,j)\in M_{t+1}}  \|\pp_{i}^t -\vecone/n\|_2^2 + \|\pp_{j}^t -\vecone/n\|_2^2 - 2 \left\|\frac{\pp_i^t+ \pp_j^t}{2} - \vecone/n \right\|_2^2.
 \end{align*}
-Finally, we can use the formula $\|\xx\|^2 + \|\yy\|^2 - 2 \|(\xx + \yy)/2\|^2 = \frac{1}{2} \| \xx - \yy\|^2$ term-wise to derive 
+Finally, we can use the formula $\|\xx\|_2^2 + \|\yy\|_2^2 - 2 \|(\xx + \yy)/2\|_2^2 = \frac{1}{2} \| \xx - \yy\|_2^2$ term-wise to derive 
 \begin{align*}
      \Phi^{t} - \Phi^{(t+1)} = \frac{1}{2}\sum_{(i,j) \in M_{t+1}} \|(\pp_{i}^t -\vecone/n) - (\pp_{j}^t -\vecone/n)\|_2^2 = \frac{1}{2}\sum_{(i,j) \in M_{t+1}} \|\pp_{i}^t - \pp_{j}^t \|_2^2.
 \end{align*}
@@ -203,13 +202,13 @@ The potential thus drops by a lot if vertices $i$ and $j$ are matched where $\pp
      \Phi^{t} - \Phi^{(t+1)} = \frac{1}{2} \sum_{(i,j) \in M_{t+1}} \|\pp_{i}^t - \pp_{j}^t \|_2^2 \geq \frac{n-1}{64 \cdot \log n} \sum_{(i,j) \in M_{t+1}} |\uu(i) - \uu(j)|^2.
 \end{align}
 
-To prove this claim, we will prove this again term-wise, showing that for each pair of vertices $i,j \in V$, we have $\|\pp_{i}^t - \pp_{j}^t \|_2^2 \geq \frac{n-1}{16 \cdot \log n} |\uu(i) - \uu(j)|^2$ w.h.p. It will then suffice to talk a union bound over all pairs $i,j$. 
+We prove this claim again term-wise, showing that for each pair of vertices $i,j \in V$, we have $\|\pp_{i}^t - \pp_{j}^t \|_2^2 \geq \frac{n-1}{16 \cdot \log n} |\uu(i) - \uu(j)|^2$ w.h.p. It will then suffice to talk a union bound over all pairs $i,j$. 
 
 To this end, let us make the following observations: since $\uu(i) = \pp_i^t \cdot \rr$, we have that $\uu(i) - \uu(j) = (\pp_i^t - \pp_j^t) \cdot \rr$ by linearity. Also note that since $\sum_j \pp_{j \mapsto i}^t = 1$ for all $i$ (since $\proj^t$ is doubly-stochastic), we further have that the projection $(\pp_i^t - \pp_j^t)$ is orthogonal to $\vecone$.
 
 We can now use the following statement about random vector $\rr$ to argue about the effect of projecting $(\pp_i^t - \pp_j^t)$ onto $\rr$. Below, we note that we have $d = n-1$ since $\rr$ is chosen from the $(n-1)$-dimensional space orthogonal to $\vecone$.
 
-\begin{theorem}\label{thm:factsGaussianAnnulus}
+\begin{theorem}[see for example \cite{vempala2005random} or any lecture notes on Johnson-Lindenstrauss]\label{thm:factsGaussianAnnulus}
 If $\yy$ is a vector of length $\ell$ in $\mathbb{R}^d$, and $\rr$ a unit random vector in $\mathbb{R}^d$, then
 \begin{itemize}
     \item $\mathbb{E}[(\yy^\trp \rr)^2] = \frac{\ell^2}{d}$, and

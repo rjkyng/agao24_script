@@ -301,7 +301,7 @@ Finally, we give the new pseudo-code for the blocking flow procedure below.
     $u \gets \textsc{LC-Tree}.\textsc{FindRoot}(s)$\;
     \eIf{there is an edge $(u,v) \in H$}{
         $\textsc{LC-Tree}.\textsc{Link}(u,v)$\;
-        \If{$v = t$}{
+        \If{$\textsc{LC-Tree}.\textsc{FindRoot}(v) = t$}{
             $(w, c) \gets \textsc{LC-Tree}.\textsc{FindMin}(s)$\;
             $\textsc{LC-Tree}.\textsc{AddCost}(s, - c)$\;
             Remove $w$ and all its incident edges from $H$ and $\textsc{LC-Tree}$ (via $\textsc{Cut}(\cdot)$).

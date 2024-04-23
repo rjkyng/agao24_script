@@ -156,7 +156,7 @@ Now, order the vertices $x_1, x_2, \dots$ in $S_i$ by their distance from $u$. S
 
 Applying this argument for all $i$, we have that $|B(u)| = \tilde{O}(k \cdot n^{1/k})$ for each $u$ w.h.p. and therefore our space bound follows.
 
-\paragraph{Preprocessing Time.} Much like in the $k=2$ construction, we can define for each $u \in S_i \setminus S_{i+1}$ the cluster $C(u) = \{ v \in V \;|\; \mathbf{dist}_G(u,v) < \mathbf{dist}_G(u,S_{i+1})\}$. Extending our analysis from before using this new definition, we get construction time $\tilde{O}(kmn^{1/k})$.
+\paragraph{Preprocessing Time.} Much like in the $k=2$ construction, we can define for each $u \in S_i \setminus S_{i+1}$ the cluster $C(u) = \{ v \in V \;|\; \mathbf{dist}_G(u,v) < \mathbf{dist}_G(v,S_{i+1})\}$. Extending our analysis from before using this new definition, we get construction time $\tilde{O}(kmn^{1/k})$.
 
 \paragraph{Query Operation.} A straight-forward way to query our new data structure for a tuple $(u,v)$ would be to search for the smallest $i$ such that $v \in B(p_i(u))$ and then return $\mathbf{dist}_G(u, p_i(u)) + \mathbf{dist}_G(p_i(u), v)$. This can be analyzed in the same way as we did for $k=2$ to obtain stretch $4k-3$\footnote{One can actually prove that this strategy gives an $4k-5$ stretch with a little trick.}.
 
@@ -195,8 +195,9 @@ In order to prove this, observe that by the while-loop condition, we must have h
 
 But the while-iteration sets $u_i = v_{i-1}$ and $w_i = p_i(v_{i-1})$, and therefore we have
 \begin{align*}
-\mathbf{dist}_G(u_{i}, w_i) &= \mathbf{dist}_G(v_{i-1}, p_i(v_{i-1})) \leq
-\mathbf{dist}_G(v_{i-1}, w_{i-1}) = \mathbf{dist}_G(v_{i-1}, p_{i-1}(u_{i-1})) \\
-&\leq \mathbf{dist}_G(u_{i-1}, p_{i-1}(u_{i-1})) + \mathbf{dist}_G(v_{i-1}, u_{i-1}) = \mathbf{dist}_G(u_{i-1}, w_{i-1}) + \Delta.
+\mathbf{dist}_G(u_{i}, w_i) &= \mathbf{dist}_G(v_{i-1}, p_i(v_{i-1})) \\
+&\leq
+\mathbf{dist}_G(v_{i-1}, w_{i-1}) \\
+&\leq \mathbf{dist}_G(u_{i-1}, w_{i-1}) + \mathbf{dist}_G(v_{i-1}, u_{i-1}) \\ &= \mathbf{dist}_G(u_{i-1}, w_{i-1}) + \Delta.
 \end{align*}
 \end{proof}
