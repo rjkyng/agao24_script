@@ -90,7 +90,7 @@ Let us describe how to represent a path $P$ in $G$. First, we pick for each vert
 Then, for each path $P$ in $G$, we store the vertices of $P$ in a binary tree, in particular a treap, $\mathcal{T}_{P}$ and enforce the following invariants:
 \begin{itemize}
       \item \textbf{Search-Property}: for all $v$, $left_{\mathcal{T}_{P}}(v)$ precedes $v$ on $P$ and $right_{\mathcal{T}_{P}}(v)$ appears later on $P$ than $v$. See the Figure~\ref{fig:PathAsTreap} below for an illustration.
-    \item \textbf{Heap-Order}: for each vertex $v \in P$, its parent $w = parent_{\mathcal{T}_{P}}(v)$ in $\mathcal{T}_{P}$ is either $NULL$ (if $v$ is the path-root) or has $\prio(v) > \prio(w)$.
+    \item \textbf{Heap-Order}: for each vertex $v \in P$, its parent $w = parent_{\mathcal{T}_{P}}(v)$ in $\mathcal{T}_{P}$ is either $NULL$ (if $v$ is the tree-root) or has $\prio(v) > \prio(w)$.
 \end{itemize}
 
 \begin{figure}[!ht]
