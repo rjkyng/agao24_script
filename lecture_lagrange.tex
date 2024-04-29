@@ -148,7 +148,10 @@ But first, let's see an example to help illustrate where these ideas
 come from.
 
 Imagine you were to prove that for all $\xx \in \R^n$ we have $\norm{\xx}_p \leq n^{\frac{1}{2} - \frac{1}{p}}\norm{\xx}_2$ for some $1 \leq p \leq 2;$.
-We can look at this as optimizing $\max_{\xx} \norm{\xx}_p$ subject to $\norm{\xx}_2$ being constant, e.g.\ simply $\norm{\xx}_2 = 1$. Then the statement above follows from a scaling argument.
+We can look at this as optimizing $\max_{\xx} \norm{\xx}_p$ subject to
+$\norm{\xx}_2$ being constant, e.g.\ simply $\norm{\xx}_2 = 1$.
+Similarly, we could also compute $\max_{\norm{\xx}_2^2 = 1 \norm{\xx}_p^p$.
+Then the statement above follows from a scaling argument.
 
 \begin{figure}[ht]
   \centering
@@ -157,11 +160,19 @@ We can look at this as optimizing $\max_{\xx} \norm{\xx}_p$ subject to $\norm{\x
   \label{fig:2-p-norm}
 \end{figure}
 
-If we move from $\xx$ to $\xx + \ddelta$ with $\ddelta \perp \grad_{\xx}\norm{\xx}_2$ and $\ddelta \not\perp \grad_{\xx}\norm{\xx}_p$ means that for infinitesimally small $\ddelta$ the 2-norm stays constant but the $p$-norm changes.
+If we move from $\xx$ to $\xx + \ddelta$ with $\ddelta \perp \grad_{\xx}\norm{\xx}_2^2$ and $\ddelta \not\perp \grad_{\xx}\norm{\xx}_p^p$ means that for infinitesimally small $\ddelta$ the 2-norm stays constant but the $p$-norm changes.
 That means for either $\xx - \ddelta$ or $\xx + \ddelta$ the $p$-norm increases
-while the 2-norm stays constant. Hence at the maximum of $\norm{\xx}_p$ the gradients of both norms have to be parallel, i.e.~\begin{equation*}\grad_{\xx}\left(\norm{\xx}_p - \lambda\norm{\xx}_2\right) = 0.\end{equation*}
+while the 2-norm stays constant. Hence at the maximum of $\norm{\xx}_p$ the gradients of both norms have to be parallel, i.e.~\begin{equation*}\grad_{\xx}\left(\norm{\xx}_p^p - \lambda\norm{\xx}_2^2\right) = 0.\end{equation*}
 %Here, $\lambda$ is the
-This insight is the core idea of Lagrange multipliers (in this case $\lambda$).
+This insight is the core idea of Lagrange multipliers (in this case
+$\lambda$).
+Note that once we know this, we can conclude that there exists a
+maximizer where $\xx = \alpha \vecone_{S}$, i.e. $\xx$ is the
+indicator of some set $S$, because otherwise the gradients cannot be
+parallel. Finally, we can argue that among such vectors, the maximum gap between
+$\norm{\xx}_2$ and $\norm{\xx}_p$ arises when $\xx = \vecone$.
+We caution that the whole argument is rather informal and it takes
+some work to make it formal.
 
 Note that here the problem is not convex, because $\{ \xx: \norm{\xx}_2^2 =
 1 \}$ is not convex and because we are asking to \emph{maximize} a norm.
