@@ -50,7 +50,7 @@ The key to the algorithm is the definition of \emph{pivots} and \emph{bunches}. 
     \caption{Graph $G$ (without the edges) where vertices are drawn according to their distance from $u$. The blue and red vertices are in $S$. The red vertex is chosen to be the pivot $p(u)$. Note that another vertex in $S$ could have been chosen to become the pivot. The bunch of $u$ is the vertices that are strictly withing the red circle. In particular, both blue vertices, the red vertex and also the white vertex on the boundary of the red circle are \emph{not} in the bunch $B(u)$.}
 \end{figure}
 
-Without further due, let us discuss the query procedure which is depicted below. It essentially consists of checking whether the vertex $v$ is already in the bunch of $u$ in which case we have stored the distance $\mathbf{dist}_G(u,v)$ explicitly. Otherwise, it uses a detour via its pivot.
+Without further ado, let us discuss the query procedure which is depicted below. It essentially consists of checking whether the vertex $v$ is already in the bunch of $u$ in which case we have stored the distance $\mathbf{dist}_G(u,v)$ explicitly. Otherwise, it uses a detour via its pivot.
 
 \begin{algorithm}
   \SetAlgoLined
