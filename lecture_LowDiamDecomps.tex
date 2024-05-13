@@ -4,12 +4,15 @@
 In this chapter, we learn about an algorithm that clusters vertices in graphs by their distance. This clustering is often referred to as \emph{low-diameter decomposition}. We define this concept below and give one of the most versatile and robust algorithms.
 
 \begin{definition}
-Given an undirected graph $G = (V,E,w)$ with non-negative weights $\ww \in \mathbb{R}_{\geq 0}$. We say that a partition $X_1, X_2, \ldots, X_k$ of $V$ and a set of edges $E_{del} = \{ (u,v) \in E \;|\; u \in X_i, v \in X_j, i \neq j\}$ form a $(D, \alpha)$-low-diameter decomposition of $G$ if
+Given an undirected graph $G = (V,E,w)$ with non-negative weights $\ww \in \mathbb{R}_{\geq 0}$. We say that a partition $\mathcal{X}$ of $V$ and a set of edges $E_{del}$ form a $(D, \alpha)$-low-diameter decomposition of $G$ if
 \begin{enumerate}
-\item for every $i \in [1, k]$ and $u,v \in X_i$, we have $\mathbf{dist}_{G[X_i]}(u,v) \leq \alpha D$, and
-\item $\forall e \in E$, $\mathbb{P}[e \in E_{del}] \leq w(e)/ D$.
+\item for every $i \in [1, k]$ and $u,v \in X \in \mathcal{X}$, we have $\mathbf{dist}_{G[X]}(u,v) \leq \alpha D$, and
+\item $\forall e \in E$, $\mathbb{P}[e \in E_{del}] \leq w(e)/ D$, and
+\item $E(G / \mathcal{X}) \subseteq E_{del}$. 
 \end{enumerate}
 \end{definition}
+Above we use $G / \mathcal{X}$ to denote the graph obtained from $G$ by contracting all vertices in the same set in $\mathcal{X}$ into a super-vertex and removing all self-loops. Thus the final property expresses that $E_{del}$ contains all edges that cross clusters in $\{X_1, X_2, \ldots, X_k\}$.
+
 \begin{remark}
 The definition above is with respect to an implicit distribution $\mathcal{D}$ over partition sets $\mathcal{X}$. A more precise statement would be to say that for a distribution $\mathcal{D}$ over partition sets of $V$, we say that $\mathcal{D}$ is an $(D, \alpha)$-LDD-distribution if sampling a partition from $\mathcal{D}$ yields the properties stated above. We will refrain from that here, however.
 \end{remark}
@@ -163,9 +166,9 @@ This completes the proof of correctness.
 
 \begin{algorithm}
 $\mathcal{X} = \{\}$;  $E_{del} \gets \emptyset$.\\
-{\color{red}Sample each vertex $v \in V$ into set $S$ with probability $\frac{100 \log(|V(G)|)}{|V(G)|}$.}\\
+{\color{red}Sample each vertex $v \in V$ into set $S$ with probability $p = \frac{324 \log(n)}{|V(G)|}$.}\\
 {\color{red} Compute in- and out-SSSP for all $s \in S$.}\\
-\While{there is a vertex $r \in V \setminus \mathcal{X}$ with {\color{red}$|B^{out}_G(r, 4D \log n) \cap S| \leq \frac{2}{3}|S|$} \textbf{ or } {\color{red}$|B^{in}_G(r, 4D \log n) \cap S| \leq \frac{2}{3} |S|$}}{
+\While{there is a vertex $r \in V \setminus \mathcal{X}$ with {\color{red}$|B^{out}_G(r, 4D \log n) \cap S| \leq \frac{2}{3}|V(G)|/p$} \textbf{ or } {\color{red}$|B^{in}_G(r, 4D \log n) \cap S| \leq \frac{2}{3}|V(G)|/p$}}{
     $\tilde{D} \gets  \textsc{ExpDistr}(D)$.\\
     $\# \gets argmin_{\# \in \{out, in\}} |B^{\#}_G(r, 4D \log n) \cap S|$.\\
     $X \gets B^{\#}_{G[V \setminus \mathcal{X}]}(r, \tilde{D})$.\\
@@ -180,9 +183,20 @@ $\mathcal{X} \gets \mathcal{X} \cup \{ V \setminus \mathcal{X}\}$\label{lne:addC
 \label{alg:directedLDDEff}
 \end{algorithm}
 
-Finally, we want to argue about runtime. Here, the bottleneck of the algorithm is the computation of the information in the while-loop condition. Unfortunately, it is not clear how to obtain this information in reasonable time.
+Finally, we want to argue about runtime. The bottleneck in \Cref{alg:directedLDD} is the computation of the information in the while-loop condition. Unfortunately, it is not clear how to obtain this information in reasonable time.
 
-Instead, we resort to weakening the while-loop condition slightly to obtain an efficient algorithm: we initially sample a set $S$ consisting of $\Theta(\log n)$ vertices uniformly at random. We then run Dijkstra from each vertex in $S$ on the graph $G$ and the reverse graph. This allows us to obtain for each vertex $v \in V$, the information how large the intersection of $S$ is with its out- and in-ball of radius $4D\log n$. This now gives an estimator that w.h.p. can detect whether a vertex $v$ has an out- and in-ball of size more than $\frac{1}{2}|V(G)|$ or otherwise guarantees that both balls are of size at most $\frac{3}{4}|V(G)|$. In our case, we could check whether a $\frac{2}{3}$-fraction of the vertices in $S$ intersect which yields a good estimator on these two values.
+Instead, we resort to weakening the while-loop condition slightly to obtain an efficient algorithm: we initially sample a set $S$ consisting of $\Theta(\log n)$ vertices uniformly at random. We then run Dijkstra from each vertex in $S$ on the graph $G$ and the reverse graph. This allows us to obtain for each vertex $v \in V$, the information how large the intersection of $S$ is with its out- and in-ball of radius $4D\log n$. This now gives an estimator that w.h.p. can detect whether a vertex $v$ has an out- and in-ball of size more than $\frac{1}{2}|V(G)|$ or otherwise guarantees that both balls are of size at most $\frac{5}{6}|V(G)|$. We make this more precise with the claim below.
+
+\begin{claim}
+For any call of \Cref{alg:directedLDDEff}, with probability at least $1- n^{-2}$, the sampling of $S$ is such that for every vertex $r \in V$ and $\# \in \{in, out\}$, we have that if $|B^{\#}_G(r, 4D \log n) \cap S| \leq \frac{2}{3}|V(G)|/p$, then $|B^{\#}_G(r, 4D \log n)| \leq \frac{5}{6} |V(G)|$. And if $|B^{\#}_G(r, 4D \log n) \cap S| \geq \frac{2}{3}|V(G)|/p$, then $|B^{\#}_G(r, 4D \log n)| \geq \frac{1}{2} |V(G)|$.
+\end{claim}
+\begin{proof}
+By Chernoff, we have that for independent random variables $Y_1, Y_2, \ldots, Y_k \in \{0,1\}$ with $\mathbb{E}[Y_i] = p$ for all $i$, we have $\mathbb{P}[|\sum_{i = 1, \ldots, k} Y_i - pk| \geq \delta p k] \leq 2e^{-\delta^2 pk / 3}$ if $0 < \delta < 1$.
+
+In our case, we choose $\delta = \frac{1}{6}$ which yields a failure probability of our claim of at most $2e^{-(1/6)^2 p|V(G)| / 3} = 2e^{- p|V(G)| / 108} = 2e^{- 3\log(n)} < n^{-2}$.
+\end{proof}
+
+Thus, it now suffices to  check whether a $\frac{2}{3}$-fraction of the vertices in $S$ intersect which yields a good estimator on these two values.
 
 Since balls in graph $G[V \setminus \mathcal{X}]$ are subsets of balls in graph $G$ (for the same center and radius), we have that every recursive call is indeed on a graph that has the number of vertices decreased by a constant fraction compared to the original graph. For the remaining vertices that are added as a cluster $V \setminus \mathcal{X}$ in the current call, we have that they reach half the vertices in $G$ in in- and out-ball w.h.p. and thus, we can use an argument as in \Cref{clm:smallDiamLDD}, we have that they are at distance at most $8 D \log n$. 
 
