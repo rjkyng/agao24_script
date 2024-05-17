@@ -182,9 +182,9 @@ is demonstrated in the following example.
   where $\calE:\R^n\to\R$ is a convex function and $\AA\in\R^{m\times n}$.
   Then the corresponding dual program is
   \begin{align*}
-    \sup_{\xx\in\R^n}\inf_{\yy\in\R^n} \calE(\yy) + \xx^\trp(\bb-\AA\yy)
-    &= \sup_{\xx\in\R^n}\bb^\trp\xx - \sup_{\yy\in\R^n} \left(\xx^\trp\AA\yy - \calE(\yy)\right) \\
-    &= \sup_{\xx\in\R^n}\bb^\trp\xx - \calE^*(\AA^\trp\xx) \\
+    \sup_{\xx\in\R^m}\inf_{\yy\in\R^n} \calE(\yy) + \xx^\trp(\bb-\AA\yy)
+    &= \sup_{\xx\in\R^m}\bb^\trp\xx - \sup_{\yy\in\R^n} \left(\xx^\trp\AA\yy - \calE(\yy)\right) \\
+    &= \sup_{\xx\in\R^m}\bb^\trp\xx - \calE^*(\AA^\trp\xx) \\
   \end{align*}
 \end{example}
 
